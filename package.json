@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:web": "npx prisma studio",
+    "db:seed": "npx prisma db seed",
+    "dev:db:migrate": "npx prisma migrate dev --name init"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seeds.ts"
