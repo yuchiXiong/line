@@ -7,33 +7,17 @@ import Notice from '@/components/Notification';
 
 export default function LoginPage() {
 
-  const { r } = useRouter().query;
+  const router = useRouter();
 
   useEffect(() => {
-    if (r) {
-      console.log('..|||.')
-      Notice.success({
-        title: '登录成功',
-        description: '3 秒后跳转回之前的页面。',
-        duration: 0
-      });
-      Notice.info({
-        title: '信息已提交',
-        description: '您的信息已经提交，我们会尽快处理。',
-        duration: 0
-      });
-      Notice.warn({
-        title: '账号风险',
-        description: '您已经 188 天没有修改密码，为了您的账号安全考虑，建议您定期修改密码。',
-        duration: 0
-      });
+    if (router.query.r) {
       Notice.error({
         title: '登录失败',
-        description: '请检查您的用户名和密码是否正确',
-        duration: 0
+        description: '用户名与密码不匹配。',
       });
+      router.replace('/account/login')
     }
-  }, [r]);
+  }, [router]);
 
   /** 提交登录 */
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -42,8 +26,9 @@ export default function LoginPage() {
     const password = e.currentTarget['password'].value;
 
     services.login({ email, password }).then(res => {
-      console.log(res);
-    })
+      localStorage.setItem('LINE_USER', JSON.stringify(res.user));
+      router.push('/');
+    });
   }
 
   return (

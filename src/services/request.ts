@@ -3,7 +3,9 @@ import Router from "next/router";
 
 const instance = axios.create({
   baseURL: '/',
-
+  headers: {
+    'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('LINE_USER') || '{}').jwt,
+  }
 });
 
 // Add a request interceptor
@@ -17,13 +19,13 @@ instance.interceptors.request.use(function (config) {
 
 instance.interceptors.response.use(function (response) {
 
-  return response;
+  return response.data;
 }, function (error) {
 
   switch (error.response.status) {
     case 401:
       Router.push(`/account/login?r=${Math.random()}`);
-      break;
+      throw new Error('401');
     default:
       return Promise.reject(error);
   }

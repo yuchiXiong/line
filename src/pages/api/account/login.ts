@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
@@ -14,7 +15,7 @@ export interface IUser {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<IUser | { msg: string }>
+  res: NextApiResponse<{ user: IUser } | { msg: string }>
 ) {
   if (req.method !== 'POST') {
     return res.status(404).end();
@@ -29,14 +30,21 @@ export default async function handler(
   });
 
   if (user && bcrypt.compareSync(password, user.password)) {
+    const token = jwt.sign({
+      uuid: user.uuid,
+      email: user.email
+    }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
+
     res.status(200).json({
-      nickname: user.nickname || '',
-      jwt: '',
-      email: user.email,
-      uuid: ''
+      user: {
+        nickname: user.nickname || '',
+        jwt: token,
+        email: user.email,
+        uuid: user.uuid
+      }
     });
   } else {
-    res.status(401).json({ msg: '用户名与密码不匹配' })
+    res.status(401).json({ msg: '用户名与密码不匹配。' })
   }
 
 }
