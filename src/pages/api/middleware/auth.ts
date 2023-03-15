@@ -30,7 +30,7 @@ const authMiddleware = async (req: NextApiRequest & { currentUser: User }, res: 
       return res.status(401).json({ message: "登录失效，请尝试重新登陆。" });
     }
 
-    req.user = user;
+    req.currentUser = user;
 
     next();
   } catch (err) {
