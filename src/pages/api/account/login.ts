@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-interface IUserData {
+export interface IUser {
   nickname: string;
   jwt: string;
   email: string;
@@ -14,7 +14,7 @@ interface IUserData {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<IUserData>
+  res: NextApiResponse<IUser | { msg: string }>
 ) {
   if (req.method !== 'POST') {
     return res.status(404).end();

@@ -1,11 +1,51 @@
+import { FormEvent, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
 import Link from 'next/link'
+import services from '@/services';
+import Notice from '@/components/Notification';
 
-const inter = Inter({ subsets: ['latin'] })
+export default function LoginPage() {
 
-export default function Home() {
+  const { r } = useRouter().query;
+
+  useEffect(() => {
+    if (r) {
+      console.log('..|||.')
+      Notice.success({
+        title: '登录成功',
+        description: '3 秒后跳转回之前的页面。',
+        duration: 0
+      });
+      Notice.info({
+        title: '信息已提交',
+        description: '您的信息已经提交，我们会尽快处理。',
+        duration: 0
+      });
+      Notice.warn({
+        title: '账号风险',
+        description: '您已经 188 天没有修改密码，为了您的账号安全考虑，建议您定期修改密码。',
+        duration: 0
+      });
+      Notice.error({
+        title: '登录失败',
+        description: '请检查您的用户名和密码是否正确',
+        duration: 0
+      });
+    }
+  }, [r]);
+
+  /** 提交登录 */
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const email = e.currentTarget['email'].value;
+    const password = e.currentTarget['password'].value;
+
+    services.login({ email, password }).then(res => {
+      console.log(res);
+    })
+  }
+
   return (
     <>
       <Head>
@@ -14,29 +54,31 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <section className="w-full h-screen flex flex-wrap items-center justify-center">
-        <div className="lg:w-2/6 md:w-1/2 bg-gray-100 rounded-lg p-8 flex flex-col w-full">
-          <h2 className="text-gray-900 text-lg font-medium title-font mb-5">登录</h2>
-          <div className="relative mb-4">
-            <label htmlFor="email" className="leading-7 text-sm text-gray-600">电子邮箱</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className="w-full bg-white rounded border border-gray-300 focus:border-green-600 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-            />
-          </div>
-          <div className="relative mb-4">
-            <label htmlFor="password" className="leading-7 text-sm text-gray-600">密码</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className="w-full bg-white rounded border border-gray-300 focus:border-green-600  text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-            />
-          </div>
-          <button className="text-white bg-green-600 border-0 py-2 px-8 focus:outline-none hover:bg-green-700 rounded text-lg">登录</button>
-          <p className="text-xs text-gray-500 mt-3">还没有账户？<Link href="/account/sign-in" className='text-green-600 text-base'>前往注册</Link></p>
+      <section className="flex flex-wrap items-center justify-center w-full h-screen">
+        <div className="flex flex-col w-full p-8 bg-gray-100 rounded-lg lg:w-2/6 md:w-1/2">
+          <form onSubmit={handleSubmit}>
+            <h2 className="mb-5 text-lg font-medium text-gray-900 title-font">登录</h2>
+            <div className="relative mb-4">
+              <label htmlFor="email" className="text-sm leading-7 text-gray-600">电子邮箱</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className="w-full px-3 py-1 text-base leading-8 text-gray-700 transition-colors duration-200 ease-in-out bg-white border border-gray-300 rounded outline-none focus:border-green-600"
+              />
+            </div>
+            <div className="relative mb-4">
+              <label htmlFor="password" className="text-sm leading-7 text-gray-600">密码</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                className="w-full px-3 py-1 text-base leading-8 text-gray-700 transition-colors duration-200 ease-in-out bg-white border border-gray-300 rounded outline-none focus:border-green-600"
+              />
+            </div>
+            <button type="submit" className="px-8 py-2 text-lg text-white bg-green-600 border-0 rounded focus:outline-none hover:bg-green-700">登录</button>
+            <p className="mt-3 text-xs text-gray-500">还没有账户？<Link href="/account/sign-in" className='text-base text-green-600'>前往注册</Link></p>
+          </form>
         </div>
       </section>
     </>
