@@ -1,10 +1,22 @@
 import axios from "axios";
 import Router from "next/router";
 
+export interface IResponse<T> {
+  status: boolean,
+  message: string,
+  data: T
+}
+
+export interface IPagination {
+  page: number,
+  size: number,
+  total: number
+}
+
 const instance = axios.create({
   baseURL: '/',
   headers: {
-    'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('LINE_USER') || '{}').jwt,
+    'Authorization': 'Bearer ' + (typeof window === "undefined") ? '' : JSON.parse(localStorage.getItem('LINE_USER') || '{}').jwt,
   }
 });
 
