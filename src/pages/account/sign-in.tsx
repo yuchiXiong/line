@@ -1,13 +1,32 @@
+import { FormEvent } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Link from 'next/link'
+import services from '@/services';
 
 
 export default function SignInPage() {
 
-  const { r } = useRouter().query;
+  const router = useRouter();
 
-  console.log(r);
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const email = e.currentTarget.email.value;
+    const nickname = e.currentTarget.nickname.value || '';
+    const password = e.currentTarget.password.value;
+    const confirmPassword = e.currentTarget['confirm-password'].value;
+
+    services.signIn({
+      email,
+      nickname,
+      password,
+      confirmPassword
+    }).then(res => {
+      localStorage.setItem('LINE_USER', JSON.stringify(res.user));
+      router.push('/');
+    }, () => { });
+  }
 
   return (
     <>
@@ -19,36 +38,54 @@ export default function SignInPage() {
       </Head>
       <section className="flex flex-wrap items-center justify-center w-full h-screen">
         <div className="flex flex-col w-full p-8 bg-gray-100 rounded-lg lg:w-2/6 md:w-1/2">
-          <h2 className="mb-5 text-lg font-medium text-gray-900 title-font">注册</h2>
-          <div className="relative mb-4">
-            <label htmlFor="email" className="text-sm leading-7 text-gray-600">电子邮箱</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className="w-full px-3 py-1 text-base leading-8 text-gray-700 transition-colors duration-200 ease-in-out bg-white border border-gray-300 rounded outline-none focus:border-green-600"
-            />
-          </div>
-          <div className="relative mb-4">
-            <label htmlFor="password" className="text-sm leading-7 text-gray-600">密码</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className="w-full px-3 py-1 text-base leading-8 text-gray-700 transition-colors duration-200 ease-in-out bg-white border border-gray-300 rounded outline-none focus:border-green-600"
-            />
-          </div>
-          <div className="relative mb-4">
-            <label htmlFor="password" className="text-sm leading-7 text-gray-600">确认密码</label>
-            <input
-              type="password"
-              id="confirm-password"
-              name="confirm-password"
-              className="w-full px-3 py-1 text-base leading-8 text-gray-700 transition-colors duration-200 ease-in-out bg-white border border-gray-300 rounded outline-none focus:border-green-600"
-            />
-          </div>
-          <button className="px-8 py-2 text-lg text-white bg-green-600 border-0 rounded focus:outline-none hover:bg-green-700">注册</button>
-          <p className="mt-3 text-xs text-gray-500">已有账户？<Link href="/account/login" className='text-base text-green-600'>立即登录</Link></p>
+          <form onSubmit={handleSubmit}>
+            <h2 className="mb-5 text-lg font-medium text-gray-900 title-font">注册</h2>
+            <div className="relative mb-4">
+              <label htmlFor="email" className="text-sm leading-7 text-gray-600">电子邮箱</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className="w-full px-3 py-1 text-base leading-8 text-gray-700 transition-colors duration-200 ease-in-out bg-white border border-gray-300 rounded outline-none focus:border-green-600"
+                required
+              />
+            </div>
+
+            <div className="relative mb-4">
+              <label htmlFor="nickname" className="text-sm leading-7 text-gray-600">用户昵称</label>
+              <input
+                type="text"
+                id="nickname"
+                name="nickname"
+                className="w-full px-3 py-1 text-base leading-8 text-gray-700 transition-colors duration-200 ease-in-out bg-white border border-gray-300 rounded outline-none focus:border-green-600"
+              />
+            </div>
+
+            <div className="relative mb-4">
+              <label htmlFor="password" className="text-sm leading-7 text-gray-600">密码</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                className="w-full px-3 py-1 text-base leading-8 text-gray-700 transition-colors duration-200 ease-in-out bg-white border border-gray-300 rounded outline-none focus:border-green-600"
+                required
+              />
+            </div>
+
+            <div className="relative mb-4">
+              <label htmlFor="password" className="text-sm leading-7 text-gray-600">确认密码</label>
+              <input
+                type="password"
+                id="confirm-password"
+                name="confirm-password"
+                className="w-full px-3 py-1 text-base leading-8 text-gray-700 transition-colors duration-200 ease-in-out bg-white border border-gray-300 rounded outline-none focus:border-green-600"
+                required
+              />
+            </div>
+            <button className="px-8 py-2 text-lg text-white bg-green-600 border-0 rounded focus:outline-none hover:bg-green-700">注册</button>
+            <p className="mt-3 text-xs text-gray-500">已有账户？<Link href="/account/login" className='text-base text-green-600'>立即登录</Link></p>
+
+          </form>
         </div>
       </section>
     </>

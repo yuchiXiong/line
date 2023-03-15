@@ -18,7 +18,7 @@ const handler = baseHandler
   .post(async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
-      res.status(403).json({ msg: '用户名与密码不能为空。' });
+      res.status(400).json({ msg: '用户名与密码不能为空。' });
       return;
     }
 

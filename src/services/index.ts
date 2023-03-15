@@ -1,5 +1,11 @@
-import * as account from './account';
+import account from './account';
+// import note from './note';
+// import noteItem from './note-item';
 
-export default {
+const services = {
   ...account,
+  // ...note,
+  // ...noteItem
 };
+
+export default services;

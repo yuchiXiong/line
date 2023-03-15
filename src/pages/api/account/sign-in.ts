@@ -18,17 +18,17 @@ const handler = baseHandler
   .post(async (req, res: NextApiResponse<{ user: IUser } | { msg: string }>) => {
     const { email, nickname, password, confirmPassword } = req.body;
     if (!email || !password || !confirmPassword) {
-      res.status(403).json({ msg: '参数异常' });
+      res.status(400).json({ msg: '参数异常' });
       return;
     }
 
     if (password !== confirmPassword) {
-      res.status(403).json({ msg: '两次密码不一致' });
+      res.status(400).json({ msg: '两次密码不一致' });
       return;
     }
 
     if (await prisma.user.findUnique({ where: { email } })) {
-      res.status(403).json({ msg: '该邮箱已被注册' });
+      res.status(400).json({ msg: '该邮箱已被注册' });
       return;
     }
 
@@ -56,7 +56,7 @@ const handler = baseHandler
       });
     } catch (e) {
       console.log(e)
-      res.status(403).json({ msg: '注册失败' })
+      res.status(500).json({ msg: '服务器异常' })
     }
 
   });

@@ -1,5 +1,6 @@
 import axios from "axios";
 import Router from "next/router";
+import Notification from '../components/Notification'
 
 export interface IResponse<T> {
   status: boolean,
@@ -16,6 +17,7 @@ export interface IPagination {
 const instance = axios.create({
   baseURL: '/',
   headers: {
+    'Accept': 'application/json',
     'Authorization': 'Bearer ' + (typeof window === "undefined") ? '' : JSON.parse(localStorage.getItem('LINE_USER') || '{}').jwt,
   }
 });
@@ -33,8 +35,13 @@ instance.interceptors.response.use(function (response) {
 
   return response.data;
 }, function (error) {
-
   switch (error.response.status) {
+    case 400:
+      Notification.error({
+        title: '异常',
+        description: error.response.data.msg
+      })
+      throw new Error('403');
     case 401:
       Router.push(`/account/login?r=${Math.random()}`);
       throw new Error('401');
