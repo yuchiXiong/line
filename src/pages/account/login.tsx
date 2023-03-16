@@ -28,7 +28,7 @@ export default function LoginPage() {
     services.login({ email, password }).then(res => {
       localStorage.setItem('LINE_USER', JSON.stringify(res.user));
       router.push('/');
-    });
+    }, () => { });
   }
 
   return (
@@ -39,8 +39,11 @@ export default function LoginPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <section className="flex flex-wrap items-center justify-center w-full h-screen">
-        <div className="flex flex-col w-full p-8 bg-gray-100 rounded-lg lg:w-2/6 md:w-1/2">
+
+      <section className="relative w-full h-screen ">
+        <div className="fixed z-10 w-screen h-screen pattern-cross pattern-blue-500 pattern-bg-white pattern-size-6 " />
+
+        <div className="absolute z-20 flex flex-col w-full p-8 -translate-x-1/2 -translate-y-1/2 bg-gray-100 rounded-lg top-1/2 left-1/2 lg:w-2/6 md:w-1/2">
           <form onSubmit={handleSubmit}>
             <h2 className="mb-5 text-lg font-medium text-gray-900 title-font">登录</h2>
             <div className="relative mb-4">

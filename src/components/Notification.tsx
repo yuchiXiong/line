@@ -84,13 +84,15 @@ const open = (options: IStaticeMethodsArgs) => {
   if (!root) {
     root = document.createElement('div');
     root.id = rootID;
-    root.className = 'fixed flex flex-col top-1 right-2'
+    root.className = 'fixed z-50 flex flex-col top-1 right-2'
     document.body.appendChild(root);
   }
 
   const container = document.createElement('div');
   container.className = 'mt-2 w-max h-max';
   root.appendChild(container);
+
+  const node = createRoot(container);
 
   /** 先让节点渲染离场，然后删除节点 */
   const close = () => {
@@ -108,9 +110,8 @@ const open = (options: IStaticeMethodsArgs) => {
       node.unmount();
       root!.removeChild(container);
     }, 300)
+    clearTimeout(timer as NodeJS.Timeout);
   };
-
-  const node = createRoot(container);
 
   node.render(<Notification
     visible={true}
@@ -120,7 +121,10 @@ const open = (options: IStaticeMethodsArgs) => {
     type={type}
   />);
 
-  duration && setTimeout(close, duration * 1000);
+  let timer: NodeJS.Timeout | null = null;
+  if (duration) {
+    timer = setTimeout(close, duration * 1000);
+  }
 }
 
 /** type success */
