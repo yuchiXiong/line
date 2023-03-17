@@ -2,7 +2,9 @@ import { PrismaClient } from '@prisma/client'
 
 export const prisma =
   // @ts-expect-error
-  global.prisma || new PrismaClient({
+  global.prisma as PrismaClient<{
+    log: "query"[];
+  }, never, false> || new PrismaClient({
     log: ['query'],
   });
 
