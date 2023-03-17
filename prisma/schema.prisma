@@ -11,13 +11,72 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  uuid      String   @unique @default(uuid())
-  email     String   @unique
-  nickname  String?
-  password  String
+  id         Int        @id @default(autoincrement())
+  uuid       String     @unique @default(uuid())
+  email      String     @unique
+  nickname   String?
+  password   String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  notes      Note[]
+  noteItems  NoteItem[]
+  strategies Strategy[]
+
+  @@index([email])
+}
+
+model Note {
+  id          Int       @id @default(autoincrement())
+  title       String
+  discardedAt DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  noteItems  NoteItem[]
+  strategies Strategy[]
+
+  @@index([userId, discardedAt])
+}
+
+model NoteItem {
+  id    Int    @id @default(autoincrement())
+  title String
+  cover String
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  note   Note @relation(fields: [noteId], references: [id])
+  noteId Int
+
+  strategy   Strategy @relation(fields: [strategyId], references: [id])
+  strategyId Int
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([email])
+  @@index([userId, noteId])
+}
+
+model Strategy {
+  id           Int    @id @default(autoincrement())
+  source       String
+  name         String
+  mode         String
+  attrSelector String
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  note   Note @relation(fields: [noteId], references: [id])
+  noteId Int
+
+  noteItems NoteItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, noteId])
 }
