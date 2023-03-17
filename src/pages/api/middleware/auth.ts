@@ -16,7 +16,7 @@ const authMiddleware = async (req: NextApiRequest & { currentUser: User }, res: 
 
   try {
     const { uuid } = jwt.verify(
-      authorization,
+      authorization.slice(7, authorization.length),
       process.env.JWT_SECRET as string
     ) as { uuid: string, email: string };
 

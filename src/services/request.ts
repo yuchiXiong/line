@@ -18,12 +18,13 @@ const instance = axios.create({
   baseURL: '/',
   headers: {
     'Accept': 'application/json',
-    'Authorization': 'Bearer ' + (typeof window === "undefined") ? '' : JSON.parse(localStorage.getItem('LINE_USER') || '{}').jwt,
   }
 });
 
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
+  config.headers['Authorization'] = 'Bearer ' + JSON.parse(localStorage.getItem('LINE_USER') || '{}').jwt;
+
   // Do something before request is sent
   return config;
 }, function (error) {
