@@ -14,7 +14,7 @@ export interface IUser {
   uuid: string;
 }
 
-const handler = baseHandler
+const handler = baseHandler()
   .post(async (req, res: NextApiResponse<{ user: IUser } | { msg: string }>) => {
     const { email, nickname, password, confirmPassword } = req.body;
     if (!email || !password || !confirmPassword) {
