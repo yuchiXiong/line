@@ -10,6 +10,8 @@ export type TNoteItem = Pick<NoteItem, 'id' | 'cover' | 'title' | 'createdAt'> &
   }
 }
 
+export type TSearchResult = Omit<TNoteItem, 'id'>
+
 const handler = baseHandler().get(authMiddleware, (req, res) => {
   const { currentUser } = req;
   res.send({ user: currentUser });
