@@ -21,6 +21,8 @@ const NoteManageSecurity = () => {
   });
 
   useEffect(() => {
+    if (!id) return;
+
     services.getNote(id).then(res => {
       setNote(res.note);
     }, () => { });

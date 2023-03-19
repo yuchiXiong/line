@@ -1,5 +1,6 @@
-import { useRouter } from 'next/router';
 import React from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 const NoteItem: React.FC<{
   id: number,
@@ -24,7 +25,10 @@ const NoteItem: React.FC<{
     return (
       <div className="box-border w-1/4 h-full overflow-hidden cursor-pointer" onClick={goToDetail}>
         <div className='flex items-center p-6 m-2 bg-gray-100 rounded'>
-          <img
+          <Image
+            width={96}
+            height={128}
+            alt="cover"
             className='w-24 h-32 overflow-hidden rounded'
             referrerPolicy="no-referrer"
             src={cover}

@@ -24,6 +24,8 @@ const NoteItemList: React.FC<{}> = () => {
   });
 
   useEffect(() => {
+    if (!id) return;
+
     services.getNote(id).then(res => {
       setNote(res.note);
     }, () => { });

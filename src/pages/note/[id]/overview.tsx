@@ -37,6 +37,8 @@ const Overview: React.FC = () => {
   const [dataSource, setDataSource] = useState<IActivity[]>([]);
 
   useEffect(() => {
+    if (!id) return;
+
     services.getNote(id).then(res => {
       setDataSource(res.note.activities);
     }, () => { });
