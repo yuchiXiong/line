@@ -1,19 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { TNote } from '@/pages/api/notes';
 import Input from '@/components/Input';
 import NoteManageLayout from './layout';
+import { useRouter } from 'next/router';
+import services from '@/services';
 
 const NoteManageProfile: React.FC = () => {
-  const note: TNote = {
-    title: 'test',
-    id: 1,
-    userId: 1,
+  const { id } = useRouter().query as { id: string };
+  const [note, setNote] = useState<TNote>({
+    title: '',
+    id: -1,
+    userId: -1,
     createdAt: new Date(),
     itemTotal: 0,
     noteItems: [],
     activities: [],
     strategies: [],
-  }
+  });
+
+  useEffect(() => {
+    services.getNote(id).then(res => {
+      setNote(res.note);
+    }, () => { });
+  }, [id]);
 
   return (
     <NoteManageLayout>

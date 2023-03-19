@@ -1,31 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { TNote } from '@/pages/api/notes';
 import Services from '@/services';
 import NoteManageLayout from './layout';
 import { useRouter } from 'next/router';
+import services from '@/services';
 
 const NoteManageSecurity = () => {
 
-  const note: TNote = {
-    title: 'test',
-    id: 1,
-    userId: 1,
+  const router = useRouter();
+  const { id } = router.query as { id: string };
+  const [note, setNote] = useState<TNote>({
+    title: '',
+    id: -1,
+    userId: -1,
     createdAt: new Date(),
     itemTotal: 0,
     noteItems: [],
     activities: [],
     strategies: [],
-  }
-  const router = useRouter();
+  });
+
+  useEffect(() => {
+    services.getNote(id).then(res => {
+      setNote(res.note);
+    }, () => { });
+  }, [id]);
 
   const handleDelete = () => {
     // todo Dialog.confirm
     if (confirm('xxx')) {
-      // Services.deleteNote(note.id).then(res => {
-      //   if (res.status) {
-      //     router.push('/');
-      //   }
-      // });
+      Services.deleteNote(note.id).then(res => {
+        router.push('/');
+      });
     }
   };
 

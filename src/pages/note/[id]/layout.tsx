@@ -1,5 +1,5 @@
-import type { NextApiRequest, NextApiResponse, GetServerSideProps } from 'next'
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
+import services from '@/services';
 import Link from 'next/link';
 import { Tab } from '@headlessui/react';
 import dayjs from '@/utils/dayjs';
@@ -11,17 +11,23 @@ const Layout: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
 
-  const { id } = useRouter().query;
-  const note: TNote = {
-    title: 'test',
-    id: 1,
-    userId: 1,
+  const { id } = useRouter().query as { id: string };
+  const [note, setNote] = useState<TNote>({
+    title: '',
+    id: -1,
+    userId: -1,
     createdAt: new Date(),
     itemTotal: 0,
     noteItems: [],
     activities: [],
     strategies: [],
-  }
+  });
+
+  useEffect(() => {
+    services.getNote(id).then(res => {
+      setNote(res.note);
+    }, () => { });
+  }, [id]);
 
   const TABS = useMemo(() => {
     return [
@@ -55,7 +61,7 @@ const Layout: React.FC<{
                 <Link
                   key={category.title}
                   href={category.url || '/'}
-                  replace={true}
+                  replace
                   className={
                     classNames(
                       'w-max py-2 px-2 text-sm font-normal leading-5',

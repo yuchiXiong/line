@@ -1,23 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NoteItem from '../../home/components/note-item';
 import Button from '@/components/Button';
 import { TNote } from '@/pages/api/notes';
 import { TNoteItem } from '@/pages/api/note-items';
 import CreateNoteItemForm from '../components/createNoteItemForm';
 import Layout from './layout';
+import services from '@/services';
+import { useRouter } from 'next/router';
 
 
 const NoteItemList: React.FC<{}> = () => {
-  const note: TNote = {
-    title: 'test',
-    id: 1,
-    userId: 1,
+
+  const { id } = useRouter().query as { id: string };
+  const [note, setNote] = useState<TNote>({
+    title: '',
+    id: -1,
+    userId: -1,
     createdAt: new Date(),
     itemTotal: 0,
     noteItems: [],
     activities: [],
     strategies: [],
-  }
+  });
+
+  useEffect(() => {
+    services.getNote(id).then(res => {
+      setNote(res.note);
+    }, () => { });
+  }, [id]);
+
   const dataSource: TNoteItem[] = note.noteItems || [];
 
   const [visible, setVisible] = useState<boolean>(false);

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import dayjs from '@/utils/dayjs';
-// import { useOutletContext } from 'react-router-dom';
 import Link from 'next/link';
 import 'react-calendar-heatmap/dist/styles.css';
 import { IActivity, TNote } from '@/pages/api/notes';
 import Layout from './layout';
+import { useRouter } from 'next/router';
+import services from '@/services';
 
 const COLOR_THEME: '-halloween' | '-winter' | '' = '';
 
@@ -32,8 +33,14 @@ const ACTION_MAP = {
 
 const Overview: React.FC = () => {
 
-  const dataSource: IActivity[] = [];
-  // const dataSource: IActivity[] = (useOutletContext() as TNote).activities || [];
+  const { id } = useRouter().query as { id: string };
+  const [dataSource, setDataSource] = useState<IActivity[]>([]);
+
+  useEffect(() => {
+    services.getNote(id).then(res => {
+      setDataSource(res.note.activities);
+    }, () => { });
+  }, [id]);
 
   const transfer = (data: IActivity[]): { date: string, count: number }[] => {
     return data.map(i => {

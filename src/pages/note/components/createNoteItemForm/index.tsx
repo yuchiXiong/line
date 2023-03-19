@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useMemo, Fragment, useRef } from 'react';
-// import { useSubmit } from 'react-router-dom';
 import { Combobox, Transition } from '@headlessui/react';
 import { debounce } from 'lodash';
 import Services from '@/services';
-import { TNote } from '@/pages/api/notes';
+import { TNote } from '@/pages/api/[note]';
 import { TSearchResult } from '@/pages/api/note-items';
 import Input from '@/components/Input';
 import Button from '@/components/Button';

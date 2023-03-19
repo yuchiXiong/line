@@ -10,9 +10,11 @@ const Note = {
   }> {
     return request.get('/api/notes');
   },
-  // getNote(id: string): Promise<IResponse<INote>> {
-  //   return request.get(`/users/${userId}/notes/${id}`);
-  // },
+  getNote(id: string): Promise<{
+    note: TNote
+  }> {
+    return request.get(`/api/notes/${id}`);
+  },
   createNote(note: Pick<Note, 'title'>): Promise<{
     note: TNote
   }> {
@@ -28,9 +30,9 @@ const Note = {
   //     'user_id': userId
   //   });
   // },
-  // deleteNote(noteId: number): Promise<IResponse<INote>> {
-  //   return request.delete(`/users/${userId}/notes/${noteId}`);
-  // }
+  deleteNote(noteId: number): Promise<{}> {
+    return request.delete(`/api/notes/${noteId}`);
+  }
 }
 
 export default Note;
