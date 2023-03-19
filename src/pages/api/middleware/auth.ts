@@ -39,4 +39,6 @@ const authMiddleware = async (req: NextApiRequest & { currentUser: User }, res: 
   }
 }
 
+export type TRequestWithAuth = NextApiRequest & { currentUser: User };
+
 export default authMiddleware;
