@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, Fragment, useRef } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { debounce } from 'lodash';
 import Services from '@/services';
-import { TNote } from '@/pages/api/[note]';
+import { TNote } from '@/pages/api/notes';
 import { TSearchResult } from '@/pages/api/note-items';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
@@ -19,10 +19,13 @@ const CreateNoteItemForm: React.FC<{
   visible: boolean,
   /** 关闭弹窗 */
   handleClose: () => void,
+  /** 创建成功后的回调函数 */
+  afterCreate?: () => void
 }> = ({
   note,
   visible,
-  handleClose
+  handleClose,
+  afterCreate
 }) => {
     const [query, setQuery] = useState<string>('');
     const [recommendNotes, setRecommendNotes] = useState<TSearchResult[]>([]);
@@ -38,9 +41,11 @@ const CreateNoteItemForm: React.FC<{
 
     const autoComplete = useMemo(() => debounce(() => {
       const keyword = autoCompleteIptRef.current?.value;
-      // Services.getAutoComplete(note.id, keyword).then(res => {
-      //   setRecommendNotes([...res.data.noteItems]);
-      // });
+      if (!keyword) return;
+
+      Services.getAutoComplete(note.id, keyword).then(res => {
+        setRecommendNotes([...res.noteItems]);
+      });
     }, 300), [note]);
 
 
@@ -49,20 +54,26 @@ const CreateNoteItemForm: React.FC<{
     };
 
     const handleNoteItemCreate = () => {
-      const formData = new FormData();
 
-      formData.append('title', currentSelect?.title || '');
-      formData.append('cover', currentSelect?.cover || '');
-      formData.append('strategy', JSON.stringify(currentSelect?.strategy || {}));
+      const noteItem = {
+        title: currentSelect?.title || '',
+        cover: currentSelect?.cover || '',
+        strategy: currentSelect?.strategy || {
+          id: 0,
+          name: '手动添加'
+        }
+      };
 
-      // submit(formData, {
-      //   action: `/note/${note.id}/items`,
-      //   method: 'post'
-      // });
+      Services.createNoteItem({
+        noteId: note.id,
+        noteItem
+      }).then(res => {
+        setRecommendNotes([]);
+        setCurrentSelect(null);
+        handleClose();
+        afterCreate && afterCreate();
+      }, () => { });
 
-      setRecommendNotes([]);
-      setCurrentSelect(null);
-      handleClose();
     };
 
     return (

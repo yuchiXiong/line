@@ -1,7 +1,7 @@
 import request from './request';
 import { TNote } from '@/pages/api/notes';
 import { IPagination } from './request';
-import { Note } from '@prisma/client';
+import { TSearchResult } from '@/pages/api/note-items';
 
 const Note = {
   getNotes(): Promise<{
@@ -15,14 +15,14 @@ const Note = {
   }> {
     return request.get(`/api/notes/${id}`);
   },
-  createNote(note: Pick<Note, 'title'>): Promise<{
+  createNote(note: Pick<TNote, 'title'>): Promise<{
     note: TNote
   }> {
     return request.post('/api/notes', {
       title: note.title
     });
   },
-  // updateNote(note: Pick<INote, 'title' | 'cover' | 'id'>): Promise<IResponse<INote>> {
+  // updateNote(note: Pick<TNote, 'title' | 'cover' | 'id'>): Promise<IResponse<INote>> {
   //   return request.put(`/users/${userId}/notes/${note.id}`, {
   //     title: note.title,
   //     cover: note.cover,
@@ -32,7 +32,12 @@ const Note = {
   // },
   deleteNote(noteId: number): Promise<{}> {
     return request.delete(`/api/notes/${noteId}`);
-  }
+  },
+  getAutoComplete(noteId: number, keyword: string): Promise<{
+    noteItems: TSearchResult[]
+  }> {
+    return request.get(`/api/notes/${noteId}/auto-complete?keyword=${keyword}`);
+  },
 }
 
 export default Note;

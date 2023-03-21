@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 const NoteItemList: React.FC<{}> = () => {
 
   const { id } = useRouter().query as { id: string };
+  const [visible, setVisible] = useState<boolean>(false);
   const [note, setNote] = useState<TNote>({
     title: '',
     id: -1,
@@ -26,14 +27,16 @@ const NoteItemList: React.FC<{}> = () => {
   useEffect(() => {
     if (!id) return;
 
+    fetchNoteItems();
+  }, [id]);
+
+  const fetchNoteItems = () => {
     services.getNote(id).then(res => {
       setNote(res.note);
     }, () => { });
-  }, [id]);
+  };
 
   const dataSource: TNoteItem[] = note.noteItems || [];
-
-  const [visible, setVisible] = useState<boolean>(false);
 
   return (
     <Layout>
@@ -41,6 +44,7 @@ const NoteItemList: React.FC<{}> = () => {
         note={note}
         visible={visible}
         handleClose={() => setVisible(false)}
+        afterCreate={fetchNoteItems}
       />
 
       <div className='flex items-center w-4/5 mx-auto'>
