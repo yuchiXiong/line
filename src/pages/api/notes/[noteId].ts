@@ -36,7 +36,11 @@ const handler = baseHandler({ attachParams: true })
         id: Number(noteId)
       },
       include: {
-        noteItems: true,
+        noteItems: {
+          orderBy: {
+            createdAt: 'desc'
+          }
+        },
         strategies: true
       }
     }));
