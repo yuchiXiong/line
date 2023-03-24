@@ -6,12 +6,14 @@ import dayjs from '@/utils/dayjs';
 import { TNote } from '@/pages/api/notes';
 import { useRouter } from 'next/router';
 import classNames from '@/utils/classnames';
+import linkMatch from '@/utils/linkMatch';
 
 const Layout: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
 
-  const { id } = useRouter().query as { id: string };
+  const router = useRouter();
+  const { id } = router.query as { id: string };
   const [note, setNote] = useState<TNote>({
     title: '',
     id: -1,
@@ -68,7 +70,7 @@ const Layout: React.FC<{
                     classNames(
                       'w-max py-2 px-2 text-sm font-normal leading-5',
                       'focus:outline-none box-border border-b-2 border-solid',
-                      false
+                      linkMatch(router.asPath, category.url)
                         ? 'border-red-400'
                         : 'border-transparent text-gray-400'
                     )
