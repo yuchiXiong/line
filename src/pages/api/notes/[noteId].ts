@@ -69,7 +69,31 @@ const handler = baseHandler({ attachParams: true })
           };
         }),
         itemTotal: note.noteItems.length,
-        activities: []
+        activities: (await prisma.audit.findMany({
+          where: {
+            OR: [
+              {
+                auditableId: note.id,
+                auditableType: 'Note'
+              },
+              ...note.noteItems.map(noteItem => ({
+                auditableId: noteItem.id,
+                auditableType: 'NoteItem'
+              })),
+              ...note.strategies.map(strategy => ({
+                auditableId: strategy.id,
+                auditableType: 'Strategy'
+              })),
+            ]
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        })).map(audit => ({
+          ...audit,
+          auditedChanges: JSON.parse(audit.auditedChanges)
+        })),
+
       }
     });
   }).delete('/api/notes/:id', async (req: TRequestWithAuth & { id: string }, res) => {

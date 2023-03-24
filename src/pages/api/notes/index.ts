@@ -1,7 +1,7 @@
 import authMiddleware, { TRequestWithAuth } from '../middleware/auth';
 import baseHandler from '../base';
 import { TNoteItem } from '../note-items';
-import { Note, Strategy } from '@prisma/client';
+import { Note, NoteItem, Strategy } from '@prisma/client';
 import { prisma } from '@/utils/db';
 import { NextApiResponse } from 'next';
 
@@ -15,15 +15,9 @@ export type TNote = Pick<Note, 'id' | 'title' | 'userId' | 'createdAt'> & {
 export interface IActivity {
   id: number,
   auditableType: string,
-  action: 'create',
+  action: 'create' | 'update' | 'delete',
   createdAt: string,
-  auditedChanges: {
-    title: 'RG 普通版 RG11 ZGMF-X42S 命运高达',
-    noteId: 3,
-    userId: 1,
-    strategyId: 3,
-    cover: 'https://bbs-attachment-cdn.78dm.net/upload/2021/07/d9754b4fa6f61a6cbcabc6d85643165a-w320h320'
-  }
+  auditedChanges: Note | NoteItem | Strategy
 }
 
 const handler = baseHandler({ attachParams: true })
@@ -37,13 +31,22 @@ const handler = baseHandler({ attachParams: true })
         discardedAt: null
       },
       include: {
-        noteItems: true,
-        strategies: true
+        noteItems: {
+          include: {
+            audits: true
+          }
+        },
+        strategies: {
+          include: {
+            audits: true
+          }
+        },
+        audits: true
       },
       orderBy: {
-        createdAt: 'desc'
+        updatedAt: 'desc'
       }
-    })).map(note => {
+    })).map(async (note) => {
       return {
         ...note,
         noteItems: note.noteItems.map(noteItem => {
@@ -57,9 +60,33 @@ const handler = baseHandler({ attachParams: true })
           };
         }),
         itemTotal: note.noteItems.length,
-        activities: []
+        activities: [
+          (await prisma.audit.findMany({
+            where: {
+              OR: [
+                {
+                  auditableId: note.id,
+                  auditableType: 'Note'
+                },
+                ...note.noteItems.map(noteItem => ({
+                  auditableId: noteItem.id,
+                  auditableType: 'NoteItem'
+                })),
+                ...note.strategies.map(strategy => ({
+                  auditableId: strategy.id,
+                  auditableType: 'Strategy'
+                })),
+              ]
+            }
+          })).map(audit => ({
+            ...audit,
+            auditedChanges: JSON.parse(audit.auditedChanges)
+          })),
+        ]
+
       };
     });
+    console.log(notes);
 
     res.status(200).json({ notes });
   }).post('/api/notes', async (req: TRequestWithAuth, res) => {
@@ -74,7 +101,27 @@ const handler = baseHandler({ attachParams: true })
     const note = await prisma.note.create({
       data: {
         title,
-        userId: currentUser.id
+        user: {
+          connect: {
+            id: currentUser.id
+          }
+        },
+        strategies: {
+          create: {
+            name: '豆瓣检索',
+            user: {
+              connect: {
+                id: currentUser.id
+              }
+            },
+            source: 'https://www.douban.com/search?q=#{KEYWORD}',
+            attrSelector: JSON.stringify({
+              title: '.result-list|.result|.content>.title>h3>a',
+              cover: '.result-list|.result|.pic>a>img',
+            }),
+            mode: "DOM"
+          }
+        }
       }
     });
 
