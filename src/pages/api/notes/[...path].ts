@@ -50,108 +50,111 @@ const handler = baseHandler({ attachParams: true })
     const strategies = note.strategies;
 
     const result = (await Promise.all(strategies.map(async (strategy): Promise<Object[]> => {
+      const url = strategy.source.replace('#{KEYWORD}', encodeURIComponent(keyword));
+      const attrSelector = JSON.parse(strategy.attrSelector);
+      let allAttrs: Array<string[]> = [];
+
       if (strategy.mode === 'API') {
-        const url = strategy.source.replace('#{KEYWORD}', encodeURIComponent(keyword));
         const response = await fetch(url).then(r => r.json());
-        const attrSelector = JSON.parse(strategy.attrSelector);
 
-        const allAttrs = Object.keys(attrSelector).map((key: string) => {
-          const selector = attrSelector[key];
-
-          return fetchValueByJSON(response, selector);
-        });
-
-        return allAttrs[0].map((value, index) => {
-          const item = {};
-          Object.keys(attrSelector).map((key: string, keyIndex: number) => {
-            item[key] = allAttrs[keyIndex][index];
-          });
-          item['strategy'] = {
-            id: strategy.id,
-            name: strategy.name,
-          };
-          return item;
-        });
-
+        allAttrs = Object.keys(attrSelector).map((key: string) => fetchValueByJSON(response, attrSelector[key]));
 
       } else if (strategy.mode === 'DOM') {
-        const url = strategy.source.replace('#{KEYWORD}', encodeURIComponent(keyword));
         const response = await fetch(url).then(r => r.text());
-        const attrSelector = JSON.parse(strategy.attrSelector);
 
-        const allAttrs = Object.keys(attrSelector).map((key: string) => {
-          const selector = attrSelector[key];
-
-          return fetchValueByHTML(response, selector);
-        });
-
-        return allAttrs[0].map((value, index) => {
-          const item = {};
-          Object.keys(attrSelector).map((key: string, keyIndex: number) => {
-            item[key] = allAttrs[keyIndex][index];
-          });
-          item['strategy'] = {
-            id: strategy.id,
-            name: strategy.name,
-          };
-
-          return item;
-        });
+        allAttrs = Object.keys(attrSelector).map((key: string) => fetchValueByHTML(response, attrSelector[key]));
       }
 
-      return [];
+      return (allAttrs[0] || []).map((_, index) => {
+        const item = {
+          /** key 为用户自定义添加的 attrSelector 对象结构的 key */
+          [Object.keys(attrSelector)[0]]: '',
+          strategy: {}
+        };
+        Object.keys(attrSelector).map((key: string, keyIndex: number) => {
+          item[key] = allAttrs[keyIndex][index];
+        });
+        item['strategy'] = {
+          id: strategy.id,
+          name: strategy.name,
+        };
+
+        return item;
+      });
+
     }))).flat();
+
     res.status(200).json({ noteItems: result });
   });
 
-
+/**
+ * @description 根据 JSON 结构获取数据
+ * TODO: 目前实现了 key[] 和 key[index] 两种情况，理论上后者可以支持数组下标与对象属性，但需要进一步测试
+ * 
+ * @param {Object} data - JSON 数据
+ * @param {string} selector - JSON 结构选择器，格式参考：books[].bookInfo.title
+ * @returns {string[]}
+ */
 const fetchValueByJSON = (data: Object, selector: string): string[] => {
-  let result = data;
   selector.split('.').forEach((sp) => {
     if (sp.includes('[]')) {
-      result = result[sp.slice(0, sp.length - 2)];
+
+      /** 包含 [] 则接下来的结果为一个数组 */
+      data = data[sp.slice(0, sp.length - 2)];
     } else if (sp.includes('[') && sp.includes(']')) {
-      const newStr = sp.slice(0, sp.length - 2);
-      const key = newStr.split('[')[0];
-      const index = newStr.split('[')[1];
-      result = Array.isArray(result) ? result.map(r => r[key][Number(index)]).filter(r => r) : result[key][Number(index)];
+
+      /** 包含 key[index] 则接下来的结果为对象的一个属性 */
+      const [key, index] = sp.slice(0, sp.length - 2).split('[');
+      data = Array.isArray(data)
+        ? data.map(r => r[key][Number(index)]).filter(r => r)
+        : data[key][Number(index)];
     } else {
-      result = Array.isArray(result) ? result.map(r => r[sp]) : result[sp];
+
+      /** 否则直接获取对象的一个属性 */
+      data = Array.isArray(data)
+        ? data.map(r => r[sp])
+        : data[sp];
     }
   });
 
-  return result;
+  return data as string[];
 }
 
+/**
+ * @description 根据 HTML 结构获取数据
+ * @param {string} data - HTML 数据
+ * @param {string} selector - CSS 选择器，格式参考：.result-list|.result|.content>.title>h3>a
+ * @returns 
+ */
 const fetchValueByHTML = (data: string, selector: string): string[] => {
   const $ = load(data);
   let html = $('body');
-  selector.split('|').forEach((sp) => {
-    // if (Array.isArray(html)) {
-    //   html = html.map(h => h.find(sp));
-    // } else {
-    html = html.find(sp);
-    // }
-  });
+  selector.split('|').forEach(sp => html = html.find(sp));
 
   if (html.length === 0) return [];
 
+  /** 根据第一个 HTML 元素的类型选择使用对应的方式获取标签的内容/属性 */
   const sample = html[0];
+
   switch (sample.name) {
     case 'img':
-      return html.map((i, el) => {
-        if ($(el).attr('src')?.includes('https')) {
-          return $(el).attr('src');
-        } else if ($(el).attr('data-src')?.includes('https')) {
-          return $(el).attr('data-src');
-        } else {
-          return '';
-        }
+      return html.map((_, el) => {
+        const src = $(el).attr('src');
+        const dataSrc = $(el).attr('data-src');
+
+        return src?.includes('https')
+          ? src
+          : dataSrc?.includes('https')
+            ? dataSrc
+            : '';
+
       }).get();
     case 'p':
     case 'a':
       return html.map((i, el) => $(el).text()).get();
   }
+
+  return [];
 }
 
 
