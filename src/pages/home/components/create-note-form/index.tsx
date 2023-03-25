@@ -52,8 +52,6 @@ const CreateNoteFrom: React.FC<{
           </Button>
         ]}
       >
-        <input name="note_item[user_id]" type="hidden" />
-        <input name="note_item[note_id]" type="hidden" />
         <div className="my-3">
           <Input
             placeholder='标题'

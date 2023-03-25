@@ -4,7 +4,7 @@ export interface IInputProps {
   value?: string,
   placeholder?: string,
   className?: string,
-  type?: 'text' | 'hidden'
+  type?: 'text' | 'hidden' | 'url'
   name?: string
   id?: string,
   autoComplete?: 'on' | 'off',

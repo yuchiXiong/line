@@ -3,7 +3,7 @@ import NoteItem from '../../home/components/note-item';
 import Button from '@/components/Button';
 import { TNote } from '@/pages/api/notes';
 import { TNoteItem } from '@/pages/api/note-items';
-import CreateNoteItemForm from '../components/createNoteItemForm';
+import CreateNoteItemForm from '../components/create-note-item-form';
 import Layout from './layout';
 import services from '@/services';
 import { useRouter } from 'next/router';
