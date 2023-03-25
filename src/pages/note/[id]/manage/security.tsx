@@ -43,17 +43,20 @@ const NoteManageSecurity = () => {
       <p className="mt-2 mb-6 leading-relaxed text-gray-600">该空间下的操作会对您的 Note 造成一定的影响，请谨慎操作。</p>
 
       <section className="text-gray-600 border border-orange-300 rounded-md body-font">
-        {[{
-          title: '归档这个 Note ',
-          desc: '将这个 Note 标记为归档和只读',
-          actionText: `归档「${note.title}」`,
-          action: () => { }
-        }, {
-          title: '删除这个 Note ',
-          desc: '该操作是不可逆的，一旦确认将没有回头路。',
-          actionText: `删除「${note.title}」`,
-          action: handleDelete
-        }].map((i, index) => (
+        {[
+          // {
+          //   title: '归档这个 Note ',
+          //   desc: '将这个 Note 标记为归档和只读',
+          //   actionText: `归档「${note.title}」`,
+          //   action: () => { }
+          // },
+          {
+            title: '删除这个 Note ',
+            desc: '该操作是不可逆的，一旦确认将没有回头路。',
+            actionText: `删除「${note.title}」`,
+            action: handleDelete
+          }
+        ].map((i, index) => (
           <div key={i.title} className={`flex items-center p-4 border-gray-200 ${index !== 1 && 'border-b'}`}>
             <div className="flex flex-col">
               <h2 className="font-medium text-gray-900 text-md title-font">{i.title}</h2>
