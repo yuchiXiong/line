@@ -103,12 +103,12 @@ const Overview: React.FC = () => {
               <h2 className="mb-1 text-sm font-medium tracking-wider text-gray-900 title-font">
                 {i.auditableType === 'NoteItem' ? '条目' : '类别'}操作
               </h2>
-              <p className="flex leading-relaxed">
+              <p className="flex items-center leading-relaxed">
                 {ACTION_MAP[i.action]}了{i.auditableType === 'NoteItem' ? '条目' : '类别'}&nbsp;
                 <Link
                   href={'/notes/3'}
                   className='border-b border-gray-400 border-solid hover:text-blue-700 hover:border-blue-600'
-                >{i.auditedChanges.title}</Link>
+                >{'title' in i.auditedChanges ? i.auditedChanges.title : i.auditedChanges.name}</Link>
                 <span title={dayjs(i.createdAt).format('YYYY-MM-DD')} className="ml-auto text-sm text-gray-400">
                   {dayjs(i.createdAt).fromNow()}
                 </span>
