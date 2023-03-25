@@ -33,8 +33,9 @@ const handler = baseHandler({ attachParams: true })
       include: {
         noteItems: {
           include: {
-            audits: true
-          }
+            audits: true,
+          },
+          take: 4
         },
         strategies: {
           include: {
@@ -46,7 +47,7 @@ const handler = baseHandler({ attachParams: true })
       orderBy: {
         updatedAt: 'desc'
       }
-    })).map(async (note) => {
+    })).map((note) => {
       return {
         ...note,
         noteItems: note.noteItems.map(noteItem => {
@@ -60,33 +61,9 @@ const handler = baseHandler({ attachParams: true })
           };
         }),
         itemTotal: note.noteItems.length,
-        activities: [
-          (await prisma.audit.findMany({
-            where: {
-              OR: [
-                {
-                  auditableId: note.id,
-                  auditableType: 'Note'
-                },
-                ...note.noteItems.map(noteItem => ({
-                  auditableId: noteItem.id,
-                  auditableType: 'NoteItem'
-                })),
-                ...note.strategies.map(strategy => ({
-                  auditableId: strategy.id,
-                  auditableType: 'Strategy'
-                })),
-              ]
-            }
-          })).map(audit => ({
-            ...audit,
-            auditedChanges: JSON.parse(audit.auditedChanges)
-          })),
-        ]
-
+        activities: []
       };
     });
-    console.log(notes);
 
     res.status(200).json({ notes });
   }).post('/api/notes', async (req: TRequestWithAuth, res) => {
