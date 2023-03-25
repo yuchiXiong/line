@@ -38,7 +38,13 @@ const handler = baseHandler({ attachParams: true })
         id: Number(noteId)
       },
       include: {
-        strategies: true
+        strategies: {
+          where: {
+            NOT: {
+              mode: 'NONE'
+            }
+          }
+        }
       }
     }));
 

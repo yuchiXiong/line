@@ -84,7 +84,7 @@ const handler = baseHandler({ attachParams: true })
           }
         },
         strategies: {
-          create: {
+          create: [{
             name: '豆瓣检索',
             user: {
               connect: {
@@ -97,7 +97,17 @@ const handler = baseHandler({ attachParams: true })
               cover: '.result-list|.result|.pic>a>img',
             }),
             mode: "DOM"
-          }
+          }, {
+            name: 'byUser',
+            user: {
+              connect: {
+                id: currentUser.id
+              }
+            },
+            source: '',
+            attrSelector: JSON.stringify({}),
+            mode: "NONE"
+          }]
         }
       }
     });
