@@ -62,7 +62,7 @@ const CreateNoteItemForm: React.FC<{
         return;
       }
 
-      if (!currentSelect?.title?.includes('http')) {
+      if (!currentSelect?.cover?.includes('http')) {
         // todo 后面调整为用 form 表单，接口上最好也加上校验
         alert('请填写合法的封面地址(style: todo)');
         return;
