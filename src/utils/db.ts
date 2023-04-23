@@ -15,7 +15,7 @@ const createPrismaClient = () => {
       const { data } = args;
 
       if (action === 'create' || action === 'update') {
-        const userId = data.user.connect.id;
+        const userId = data.userId || data.user.connect.id;
 
         await prisma.audit.create({
           data: {

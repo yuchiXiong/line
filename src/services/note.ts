@@ -22,14 +22,12 @@ const Note = {
       title: note.title
     });
   },
-  // updateNote(note: Pick<TNote, 'title' | 'cover' | 'id'>): Promise<IResponse<INote>> {
-  //   return request.put(`/users/${userId}/notes/${note.id}`, {
-  //     title: note.title,
-  //     cover: note.cover,
-  //     id: note.id,
-  //     'user_id': userId
-  //   });
-  // },
+  updateNote(note: Pick<TNote, 'title' | 'id'>): Promise<{}> {
+    return request.put(`/api/notes/${note.id}`, {
+      title: note.title,
+      id: note.id,
+    });
+  },
   deleteNote(noteId: number): Promise<{}> {
     return request.delete(`/api/notes/${noteId}`);
   },

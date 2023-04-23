@@ -132,6 +132,33 @@ const handler = baseHandler({ attachParams: true })
 
 
     res.status(200).json({});
+  }).put('/api/notes/:id', async (req: TRequestWithAuth & { id: string }, res) => {
+    const { currentUser } = req;
+    const { noteId } = req.query;
+    const { title } = req.body;
+
+    const note = (await prisma.note.findUnique({
+      where: {
+        id: Number(noteId)
+      },
+    }));
+
+    if (!note || note?.userId !== currentUser.id) {
+      res.status(403).json({ msg: '没有找到对应资源' });
+      return;
+    }
+
+    await prisma.note.update({
+      where: {
+        id: note.id
+      },
+      data: {
+        ...note,
+        title
+      },
+    });
+
+    res.status(200).json({});
   });
 
 export default handler;

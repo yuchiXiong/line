@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { TNote } from '@/pages/api/notes';
 import Input from '@/components/Input';
 import NoteManageLayout from './layout';
-import { useRouter } from 'next/router';
-import services from '@/services';
+import { Router, useRouter } from 'next/router';
+import Services from '@/services';
 
 const NoteManageProfile: React.FC = () => {
-  const { id } = useRouter().query as { id: string };
+  const router = useRouter();
+  const { id } = router.query as { id: string };
   const [note, setNote] = useState<TNote>({
     title: '',
     id: -1,
@@ -21,21 +22,38 @@ const NoteManageProfile: React.FC = () => {
   useEffect(() => {
     if (!id) return;
 
-    services.getNote(id).then(res => {
-      setNote(res.note);
-    }, () => { });
+    fetchData();
   }, [id]);
+
+  const fetchData = () => {
+    Services.getNote(id).then(res => {
+      setNote({ ...res.note });
+    }, () => { });
+  }
+
+  const handleUpdateNote = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const title = e.currentTarget.noteTitle.value;
+    Services.updateNote({
+      id: Number(id),
+      title,
+    }).then(res => {
+      // todo refresh
+      location.reload();
+    }, () => { });
+  }
 
   return (
     <NoteManageLayout>
       <div className="flex flex-col justify-center min-h-full p-4 ">
-        <form method='put'>
+        <form method='put' onSubmit={handleUpdateNote}>
           <div className="mt-2">
             <input name="note_item[note_id]" type="hidden" />
             <div className="my-3">
               <Input
                 placeholder={note.title}
-                name='title'
+                name='noteTitle'
               />
             </div>
           </div>
