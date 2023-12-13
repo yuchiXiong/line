@@ -1,6 +1,5 @@
 import React from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
+import {useRouter} from 'next/router';
 
 const NoteItem: React.FC<{
   id: number,
@@ -8,38 +7,41 @@ const NoteItem: React.FC<{
   cover: string,
   source: string,
 }> = ({
-  id,
-  title,
-  cover,
-  source
-}) => {
+                        id,
+                        title,
+                        cover,
+                        source
+                      }) => {
 
-    const router = useRouter();
+  const router = useRouter();
 
-    const { id: noteId } = router.query;
+  const {id: noteId} = router.query;
 
-    const goToDetail = () => {
-      router.push(`/note/${noteId}/items/${id}`);
-    };
-
-    return (
-      <div className="box-border w-1/4 h-full overflow-hidden cursor-pointer" onClick={goToDetail}>
-        <div className='flex items-center p-6 m-2 bg-gray-100 rounded'>
-          <Image
-            width={96}
-            height={128}
-            alt="cover"
-            className='w-24 h-32 overflow-hidden rounded'
-            referrerPolicy="no-referrer"
-            src={cover}
-          />
-          <div className='flex flex-col flex-1 ml-4'>
-            <p className="text-sm text-gray-700 line-clamp-2">{title}</p>
-            <span className="px-2 py-1 mt-2 text-xs text-white bg-green-500 rounded w-max">{source}</span>
-          </div>
-        </div>
-      </div >
-    );
+  const goToDetail = () => {
+    router.push(`/note/${noteId}/items/${id}`);
   };
+
+  return (
+    <div className="box-border inline-block h-96 cursor-pointer w-1/6 p-2 transition-all duration-200 ease-in-out"
+         onClick={goToDetail}>
+      <div
+        className='flex relative h-full w-full items-center bg-gray-100 overflow-hidden rounded'
+      >
+        <img
+          alt="cover"
+          className='flex-1 w-full absolute top-0 left-0 rounded transition duration-200 ease-in-out hover:scale-150'
+          referrerPolicy="no-referrer"
+          src={cover}
+        />
+        <div
+          className='absolute flex text-xl items-center justify-end bottom-0 h-12 w-full bg-gradient-to-t from-black via-90% to-transparent text-md text-right px-2 text-white '
+        >
+          <span className="line-clamp-1 w-full">{title}</span>
+          {/*<span className="px-2 py-1 mt-2 text-xs text-white bg-green-500 rounded w-max">{source}</span>*/}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default NoteItem;

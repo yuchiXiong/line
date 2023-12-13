@@ -1,9 +1,9 @@
-import authMiddleware, { TRequestWithAuth } from '../middleware/auth';
+import authMiddleware, {TRequestWithAuth} from '../middleware/auth';
 import baseHandler from '../base';
-import { TNoteItem } from '../note-items';
-import { Note, NoteItem, Strategy } from '@prisma/client';
-import { prisma } from '@/utils/db';
-import { NextApiResponse } from 'next';
+import {TNoteItem} from '../note-items';
+import {Note, NoteItem, Strategy} from '@prisma/client';
+import {prisma} from '@/utils/db';
+import {NextApiResponse} from 'next';
 
 export type TNote = Pick<Note, 'id' | 'title' | 'userId' | 'createdAt'> & {
   itemTotal: number,
@@ -35,7 +35,7 @@ const handler = baseHandler({ attachParams: true })
           include: {
             audits: true,
           },
-          take: 4
+          take: 6
         },
         strategies: {
           include: {
