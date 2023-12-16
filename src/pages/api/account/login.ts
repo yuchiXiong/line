@@ -14,7 +14,7 @@ export interface IUser {
   uuid: string;
 }
 
-const handler = baseHandler
+const handler = baseHandler()
   .post(async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {

@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import nc from "next-connect";
+import nc, { Options } from "next-connect";
 
-const baseHandler = nc<NextApiRequest, NextApiResponse>({
+const baseHandler = (opt?: Options<NextApiRequest, NextApiResponse<any>>) => nc<NextApiRequest, NextApiResponse>({
+  attachParams: opt?.attachParams,
   onError: (err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ msg: "Internal server error" });

@@ -2,7 +2,15 @@
 import authMiddleware from './middleware/auth';
 import baseHandler from './base';
 
-const handler = baseHandler.get(authMiddleware, (req, res) => {
+export interface IStrategy {
+  id: number,
+  name: string,
+  mode: 'DOM' | 'API',
+  source: string,
+  attrSelector: Record<string, string>
+}
+
+const handler = baseHandler().get(authMiddleware, (req, res) => {
   const { currentUser } = req;
   res.send({ user: currentUser });
 });

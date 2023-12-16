@@ -18,12 +18,13 @@ const instance = axios.create({
   baseURL: '/',
   headers: {
     'Accept': 'application/json',
-    'Authorization': 'Bearer ' + (typeof window === "undefined") ? '' : JSON.parse(localStorage.getItem('LINE_USER') || '{}').jwt,
   }
 });
 
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
+  config.headers['Authorization'] = 'Bearer ' + JSON.parse(localStorage.getItem('LINE_USER') || '{}').jwt;
+
   // Do something before request is sent
   return config;
 }, function (error) {
@@ -45,6 +46,9 @@ instance.interceptors.response.use(function (response) {
     case 401:
       Router.push(`/account/login?r=${Math.random()}`);
       throw new Error('401');
+    case 404:
+      Router.replace(`/404`);
+      throw new Error('404');
     default:
       return Promise.reject(error);
   }
