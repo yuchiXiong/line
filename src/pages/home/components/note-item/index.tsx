@@ -22,8 +22,10 @@ const NoteItem: React.FC<{
     };
 
     return (
-      <div className="box-border inline-block w-1/6 p-2 transition-all duration-200 ease-in-out cursor-pointer h-96"
-        onClick={goToDetail}>
+      <div
+        className="box-border inline-block w-1/6 p-2 transition-all duration-200 ease-in-out h-96"
+      // onClick={goToDetail}
+      >
         <div
           className='relative flex items-center w-full h-full overflow-hidden bg-gray-100 rounded'
         >
