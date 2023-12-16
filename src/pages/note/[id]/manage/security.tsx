@@ -4,31 +4,19 @@ import Services from '@/services';
 import NoteManageLayout from './layout';
 import { useRouter } from 'next/router';
 import services from '@/services';
+import useSWR from "swr";
 
 const NoteManageSecurity = () => {
 
   const router = useRouter();
   const { id } = router.query as { id: string };
-  const [note, setNote] = useState<TNote>({
-    title: '',
-    id: -1,
-    userId: -1,
-    createdAt: new Date(),
-    itemTotal: 0,
-    noteItems: [],
-    activities: [],
-    strategies: [],
-  });
 
-  useEffect(() => {
-    if (!id) return;
+  const { data, error, isLoading, } = useSWR(`/api/notes/${id}`, () => services.getNote(id))
 
-    services.getNote(id).then(res => {
-      setNote(res.note);
-    }, () => { });
-  }, [id]);
+  const note = data?.note;
 
   const handleDelete = () => {
+    if (!note?.id) return;
     // todo Dialog.confirm
     if (confirm('xxx')) {
       Services.deleteNote(note.id).then(res => {
@@ -53,7 +41,7 @@ const NoteManageSecurity = () => {
           {
             title: '删除这个 Note ',
             desc: '该操作是不可逆的，一旦确认将没有回头路。',
-            actionText: `删除「${note.title}」`,
+            actionText: `删除「${note?.title}」`,
             action: handleDelete
           }
         ].map((i, index) => (
@@ -65,7 +53,7 @@ const NoteManageSecurity = () => {
             <button
               onClick={i.action}
               className={`px-5 h-9 ml-auto font-medium text-red-600 
-          bg-gray-50 border border-gray-300 rounded-md`}>{i.actionText}</button>
+          bg-gray-50 border border-gray-300 rounded-md` }>{i.actionText}</button>
           </div>
         ))}
       </section>

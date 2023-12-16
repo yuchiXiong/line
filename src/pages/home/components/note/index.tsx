@@ -1,7 +1,7 @@
 import React from 'react';
 import NoteItem from '../note-item';
-import {Right} from '@icon-park/react';
-import {TNote} from '@/pages/api/notes';
+import { Right } from '@icon-park/react';
+import { TNote } from '@/pages/api/notes';
 import Link from 'next/link';
 
 const Note: React.FC<{
@@ -25,7 +25,7 @@ const Note: React.FC<{
         </div>
 
         {note.noteItems.length > 0 ? (
-          <div className='pb-10 flex flex-wrap border-b border-gray-100'>
+          <div className='flex flex-wrap pb-10 border-b border-gray-100'>
             {note.noteItems.map(item => (
               <NoteItem
                 id={item.id}

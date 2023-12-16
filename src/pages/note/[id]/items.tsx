@@ -7,48 +7,36 @@ import CreateNoteItemForm from '../components/create-note-item-form';
 import Layout from './layout';
 import services from '@/services';
 import { useRouter } from 'next/router';
+import useSWR, { mutate } from "swr";
 
 
 const NoteItemList: React.FC<{}> = () => {
 
   const { id } = useRouter().query as { id: string };
   const [visible, setVisible] = useState<boolean>(false);
-  const [note, setNote] = useState<TNote>({
-    title: '',
-    id: -1,
-    userId: -1,
-    createdAt: new Date(),
-    itemTotal: 0,
-    noteItems: [],
-    activities: [],
-    strategies: [],
-  });
 
-  useEffect(() => {
-    if (!id) return;
+  const { data, error, isLoading, } = useSWR(`/api/notes/${id}`, () => services.getNote(id))
+  const reFetch = () => {
+    mutate(`/api/notes/${id}`, () => services.getNote(id))
+  }
 
-    fetchNoteItems();
-  }, [id]);
+  const note = data?.note;
 
-  const fetchNoteItems = () => {
-    services.getNote(id).then(res => {
-      setNote(res.note);
-    }, () => { });
-  };
-
-  const dataSource: TNoteItem[] = note.noteItems || [];
+  const dataSource: TNoteItem[] = note?.noteItems || [];
 
   return (
     <Layout>
-      <CreateNoteItemForm
-        note={note}
-        visible={visible}
-        handleClose={() => setVisible(false)}
-        afterCreate={fetchNoteItems}
-      />
+      {note && (
+        <CreateNoteItemForm
+          note={note}
+          visible={visible}
+          handleClose={() => setVisible(false)}
+          afterCreate={reFetch}
+        />
+      )}
 
       <div className='flex items-center w-4/5 mx-auto'>
-        <span>当前共 {note.itemTotal} 个项目</span>
+        <span>当前共 {note?.itemTotal} 个项目</span>
         <Button
           onClick={() => setVisible(true)}
           className={`px-4 py-2 ml-auto text-sm font-medium

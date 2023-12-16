@@ -4,32 +4,16 @@ import Input from '@/components/Input';
 import NoteManageLayout from './layout';
 import { Router, useRouter } from 'next/router';
 import Services from '@/services';
+import useSWR from "swr";
+import services from "@/services";
 
 const NoteManageProfile: React.FC = () => {
   const router = useRouter();
   const { id } = router.query as { id: string };
-  const [note, setNote] = useState<TNote>({
-    title: '',
-    id: -1,
-    userId: -1,
-    createdAt: new Date(),
-    itemTotal: 0,
-    noteItems: [],
-    activities: [],
-    strategies: [],
-  });
 
-  useEffect(() => {
-    if (!id) return;
+  const { data, error, isLoading, } = useSWR(`/api/notes/${id}`, () => services.getNote(id))
 
-    fetchData();
-  }, [id]);
-
-  const fetchData = () => {
-    Services.getNote(id).then(res => {
-      setNote({ ...res.note });
-    }, () => { });
-  }
+  const note = data?.note;
 
   const handleUpdateNote = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -41,7 +25,8 @@ const NoteManageProfile: React.FC = () => {
     }).then(res => {
       // todo refresh
       location.reload();
-    }, () => { });
+    }, () => {
+    });
   }
 
   return (
@@ -52,7 +37,7 @@ const NoteManageProfile: React.FC = () => {
             <input name="note_item[note_id]" type="hidden" />
             <div className="my-3">
               <Input
-                placeholder={note.title}
+                placeholder={note?.title}
                 name='noteTitle'
               />
             </div>

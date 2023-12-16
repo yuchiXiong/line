@@ -1,12 +1,12 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, { useMemo } from 'react';
 import services from '@/services';
 import Link from 'next/link';
-import {Tab} from '@headlessui/react';
+import { Tab } from '@headlessui/react';
 import dayjs from '@/utils/dayjs';
-import {TNote} from '@/pages/api/notes';
-import {useRouter} from 'next/router';
+import { useRouter } from 'next/router';
 import classNames from '@/utils/classnames';
 import linkMatch from '@/utils/linkMatch';
+import useSWR from "swr";
 
 const Layout: React.FC<{
   children: React.ReactNode;
@@ -14,29 +14,15 @@ const Layout: React.FC<{
 
   const router = useRouter();
   const { id } = router.query as { id: string };
-  const [note, setNote] = useState<TNote>({
-    title: '',
-    id: -1,
-    userId: -1,
-    createdAt: new Date(),
-    itemTotal: 0,
-    noteItems: [],
-    activities: [],
-    strategies: [],
-  });
 
-  useEffect(() => {
-    if (!id) return;
+  const { data, error, isLoading } = useSWR(`/api/notes/${id}`, () => services.getNote(id))
 
-    services.getNote(id).then(res => {
-      setNote(res.note);
-    }, () => { });
-  }, [id]);
+  const note = data?.note;
 
   const TABS = useMemo(() => {
     return [
       { title: '我的项目', url: `/note/${id}/items` },
-      {title: '我的概览', url: `/note/${id}/overview`},
+      { title: '我的概览', url: `/note/${id}/overview` },
       // todo 策略管理
       // { title: '策略管理', url: `/note/${id}/strategy` },
       { title: `管理「${note?.title}」`, url: `/note/${id}/manage/profile` }

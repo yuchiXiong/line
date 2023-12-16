@@ -5,29 +5,16 @@ import { TNote } from '@/pages/api/notes';
 import Layout from '../layout';
 import { useRouter } from 'next/router';
 import services from '@/services';
+import useSWR from "swr";
 
 const NoteManageLayout: React.FC<{
   children: React.ReactNode
 }> = ({ children }) => {
   const { id } = useRouter().query as { id: string };
-  const [note, setNote] = useState<TNote>({
-    title: '',
-    id: -1,
-    userId: -1,
-    createdAt: new Date(),
-    itemTotal: 0,
-    noteItems: [],
-    activities: [],
-    strategies: [],
-  });
 
-  useEffect(() => {
-    if (!id) return;
+  const { data, error, isLoading, } = useSWR(`/api/notes/${id}`, () => services.getNote(id))
 
-    services.getNote(id).then(res => {
-      setNote(res.note);
-    }, () => { });
-  }, [id]);
+  const note = data?.note;
 
   return (
     <Layout>
@@ -42,11 +29,11 @@ const NoteManageLayout: React.FC<{
               {['编辑信息'].map(i => (
                 <Link
                   key={i}
-                  href={`/note/${note.id}/manage/profile`}
+                  href={`/note/${note?.id}/manage/profile`}
                   replace
                   className={`ml-2 justify-between rounded-lg
                    p-2 text-left text-sm font-medium
-                   hover:bg-gray-100 focus-visible:ring `}
+                   hover:bg-gray-100 focus-visible:ring ` }
                 >
                   {i}
                 </Link>
@@ -63,10 +50,10 @@ const NoteManageLayout: React.FC<{
               {['隐私操作'].map(i => (
                 <Link
                   key={i}
-                  href={`/note/${note.id}/manage/security`}
+                  href={`/note/${note?.id}/manage/security`}
                   className={`ml-2 justify-between rounded-lg
                    p-2 text-left text-sm font-medium
-                   hover:bg-gray-100 focus-visible:ring `}
+                   hover:bg-gray-100 focus-visible:ring ` }
                 >
                   {i}
                 </Link>

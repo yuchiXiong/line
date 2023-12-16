@@ -7,6 +7,7 @@ import { IActivity, TNote } from '@/pages/api/notes';
 import Layout from './layout';
 import { useRouter } from 'next/router';
 import services from '@/services';
+import useSWR from "swr";
 
 const COLOR_THEME: '-halloween' | '-winter' | '' = '';
 
@@ -22,7 +23,8 @@ const getColor = (count: number) => {
       return `calendar${COLOR_THEME}-graph-day-L3-bg`;
     default:
       return `calendar${COLOR_THEME}-graph-day-L4-bg`;
-  };
+  }
+  ;
 };
 
 const ACTION_MAP = {
@@ -34,15 +36,10 @@ const ACTION_MAP = {
 const Overview: React.FC = () => {
 
   const { id } = useRouter().query as { id: string };
-  const [dataSource, setDataSource] = useState<IActivity[]>([]);
 
-  useEffect(() => {
-    if (!id) return;
+  const { data, error, isLoading, } = useSWR(`/api/notes/${id}`, () => services.getNote(id))
 
-    services.getNote(id).then(res => {
-      setDataSource(res.note.activities);
-    }, () => { });
-  }, [id]);
+  const dataSource: IActivity[] = data?.note.activities || [];
 
   const transfer = (data: IActivity[]): { date: string, count: number }[] => {
     return data.map(i => {
