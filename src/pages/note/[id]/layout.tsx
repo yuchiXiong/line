@@ -1,10 +1,10 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import services from '@/services';
 import Link from 'next/link';
-import { Tab } from '@headlessui/react';
+import {Tab} from '@headlessui/react';
 import dayjs from '@/utils/dayjs';
-import { TNote } from '@/pages/api/notes';
-import { useRouter } from 'next/router';
+import {TNote} from '@/pages/api/notes';
+import {useRouter} from 'next/router';
 import classNames from '@/utils/classnames';
 import linkMatch from '@/utils/linkMatch';
 
@@ -35,8 +35,8 @@ const Layout: React.FC<{
 
   const TABS = useMemo(() => {
     return [
-      { title: '我的概览', url: `/note/${id}/overview` },
       { title: '我的项目', url: `/note/${id}/items` },
+      {title: '我的概览', url: `/note/${id}/overview`},
       // todo 策略管理
       // { title: '策略管理', url: `/note/${id}/strategy` },
       { title: `管理「${note?.title}」`, url: `/note/${id}/manage/profile` }
