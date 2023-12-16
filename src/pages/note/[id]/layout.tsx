@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import classNames from '@/utils/classnames';
 import linkMatch from '@/utils/linkMatch';
 import useSWR from "swr";
+import { Return } from '@icon-park/react';
 
 const Layout: React.FC<{
   children: React.ReactNode;
@@ -33,6 +34,10 @@ const Layout: React.FC<{
   return (
     <section>
       <div className='flex flex-col items-center px-8 pt-8 bg-gray-100'>
+        <span className="fixed p-2 bg-gray-300 rounded-full cursor-pointer top-4 left-4" onClick={() => router.back()}>
+          <Return theme="outline" size="24" fill="#333" />
+        </span>
+
         <p className='text-2xl text-gray-700 '>「{note?.title}」</p>
         <p className='flex items-center mt-2 text-sm'>
           <span>{'@yuchiXiong'}</span>

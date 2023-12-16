@@ -1,28 +1,22 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import Services from '@/services';
 import Button from '@/components/Button';
 import Note from './components/note';
-import {TNote} from '@/pages/api/notes';
 import CreateNoteFrom from './components/create-note-form';
+import useSWR, { mutate } from 'swr';
 
 export default function HomePage() {
 
-  const [notes, setNotes] = useState<TNote[]>([]);
   const [createNoteFormVisible, setCreateNoteFormVisible] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetchNotes();
-  }, []);
+  const { data, error, isLoading } = useSWR('/api/notes', Services.getNotes)
 
-  const fetchNotes = () => {
-    Services.getNotes().then(res => {
-      setNotes(res.notes);
-    }, () => { });
-  };
 
   const openAddNoteModal = () => {
     setCreateNoteFormVisible(true);
   };
+
+  const notes = data?.notes || [];
 
   return (
     <div className="flex flex-col w-full h-screen pt-24">
@@ -30,10 +24,10 @@ export default function HomePage() {
       <CreateNoteFrom
         visible={createNoteFormVisible}
         handleClose={() => setCreateNoteFormVisible(false)}
-        afterSubmit={() => fetchNotes()}
+        afterSubmit={() => mutate('/api/notes', Services.getNotes)}
       />
 
-      <section className="box-border fixed w-full top-0 z-10 p-6 text-center bg-gray-100">
+      <section className="box-border fixed top-0 z-10 w-full p-6 text-center bg-gray-100">
         <p className="text-base leading-relaxed text-gray-600">
           <Button onClick={openAddNoteModal} className="">创建 Note</Button> 记录每一件美好的事物。
         </p>
