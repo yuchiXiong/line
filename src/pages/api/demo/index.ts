@@ -31,21 +31,28 @@ const handler = baseHandler()
     });
 
     // Set screen size
-    await page.setViewport({ width: 640, height: 1024 });
+    await page.setViewport({ width: 846, height: 1024 });
 
 
     const img = await page.screenshot({
       fullPage: true,
+      type: 'webp',
+      quality: 100,
+      encoding: 'base64'
     });
 
 
     await browser.close();
 
-    res
-      .status(200)
-      .setHeader('Content-Disposition', `inline; filename="1.jpg"`)
-      .setHeader('Content-Type', 'image/jpeg')
-      .send(img);
+    res.status(200).json({
+      img: "data:image/png;base64, " + img
+    })
+
+    // res
+    //   .status(200)
+    //   .setHeader('Content-Disposition', `inline; filename="1.jpg"`)
+    //   .setHeader('Content-Type', 'image/jpeg')
+    //   .send(img);
 
     res.status(200).json({
       msg: 'sss'

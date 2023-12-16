@@ -12,7 +12,7 @@ export default function HomePage() {
 
   return (
     <div
-      className="container flex flex-col px-4 pb-8 mx-auto tracking-widest text-white h-max"
+      className="flex flex-col px-4 pb-8 mx-auto tracking-widest text-white h-max"
       style={{
         backgroundColor: 'rgb(126, 176, 154)'
       }}
