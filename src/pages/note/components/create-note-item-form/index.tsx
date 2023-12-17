@@ -22,8 +22,17 @@ const CreateNoteItemForm: React.FC<{
   /** 创建成功后的回调函数 */
   afterCreate?: () => void
 }> = ({
-  note,
-  visible,
+  note = {
+    title: '',
+    id: 0,
+    userId: 0,
+    createdAt: '',
+    itemTotal: 0,
+    noteItems: [],
+    activities: [],
+    strategies: [],
+  },
+  visible = false,
   handleClose,
   afterCreate
 }) => {

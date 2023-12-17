@@ -7,7 +7,16 @@ import Link from 'next/link';
 const Note: React.FC<{
   note: TNote,
 }> = ({
-  note
+  note = {
+    title: '',
+    id: 0,
+    userId: 0,
+    createdAt: '',
+    itemTotal: 0,
+    noteItems: [],
+    activities: [],
+    strategies: [],
+  }
 }) => {
 
     return (

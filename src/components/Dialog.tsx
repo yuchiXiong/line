@@ -10,7 +10,7 @@ interface IDialogProps {
 }
 
 const Dialog: React.FC<IDialogProps> = ({
-  visible,
+  visible = false,
   onClose,
   title,
   children,
