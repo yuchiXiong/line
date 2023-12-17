@@ -106,20 +106,20 @@ const fetchValueByJSON = (data: Object, selector: string): string[] => {
     if (sp.includes('[]')) {
 
       /** 包含 [] 则接下来的结果为一个数组 */
-      data = data[sp.slice(0, sp.length - 2)];
+      data = (data as any)[sp.slice(0, sp.length - 2)];
     } else if (sp.includes('[') && sp.includes(']')) {
 
       /** 包含 key[index] 则接下来的结果为对象的一个属性 */
       const [key, index] = sp.slice(0, sp.length - 2).split('[');
       data = Array.isArray(data)
         ? data.map(r => r[key][Number(index)]).filter(r => r)
-        : data[key][Number(index)];
+        : (data as any)[key][Number(index)];
     } else {
 
       /** 否则直接获取对象的一个属性 */
       data = Array.isArray(data)
         ? data.map(r => r[sp])
-        : data[sp];
+        : (data as any)[sp];
     }
   });
 
