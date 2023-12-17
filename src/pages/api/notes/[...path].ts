@@ -41,7 +41,8 @@ const handler = baseHandler({ attachParams: true })
         strategies: {
           where: {
             NOT: {
-              mode: 'NONE'
+              mode: 'NONE',
+              isDeleted: false
             }
           }
         }
@@ -61,7 +62,13 @@ const handler = baseHandler({ attachParams: true })
       let allAttrs: Array<string[]> = [];
 
       if (strategy.mode === 'API') {
-        const response = await fetch(url).then(r => r.json());
+        const response = url.includes('douban.com')
+          ? await fetch(url, {
+            headers: {
+              "Referer": "https://www.douban.com/search?q=%E5%AE%87%E5%AE%99",
+            }
+          }).then(r => r.json())
+          : await fetch(url).then(r => r.json());
 
         allAttrs = Object.keys(attrSelector).map((key: string) => fetchValueByJSON(response, attrSelector[key]));
 

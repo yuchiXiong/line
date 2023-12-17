@@ -65,11 +65,12 @@ model NoteItem {
 }
 
 model Strategy {
-  id           Int    @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   source       String
   name         String
   mode         String
   attrSelector String
+  isDeleted    Boolean @default(false)
 
   user   User @relation(fields: [userId], references: [id])
   userId Int

@@ -1,9 +1,9 @@
-import authMiddleware, {TRequestWithAuth} from '../middleware/auth';
+import authMiddleware, { TRequestWithAuth } from '../middleware/auth';
 import baseHandler from '../base';
-import {TNoteItem} from '../note-items';
-import {Note, NoteItem, Strategy} from '@prisma/client';
-import {prisma} from '@/utils/db';
-import {NextApiResponse} from 'next';
+import { TNoteItem } from '../note-items';
+import { Note, NoteItem, Strategy } from '@prisma/client';
+import { prisma } from '@/utils/db';
+import { NextApiResponse } from 'next';
 
 export type TNote = Pick<Note, 'id' | 'title' | 'userId' | 'createdAt'> & {
   itemTotal: number,
@@ -91,10 +91,10 @@ const handler = baseHandler({ attachParams: true })
                 id: currentUser.id
               }
             },
-            source: 'https://www.douban.com/search?q=#{KEYWORD}',
+            source: 'https://m.douban.com/rexxar/api/v2/search?q=#{KEYWORD}&start=0&count=50&sort=relevance',
             attrSelector: JSON.stringify({
-              title: '.result-list|.result|.content>.title>h3>a',
-              cover: '.result-list|.result|.pic>a>img',
+              title: 'subjects.items[].target.title',
+              cover: 'subjects.items[].target.cover_url',
             }),
             mode: "DOM"
           }, {
