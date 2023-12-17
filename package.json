@@ -10,6 +10,7 @@
     "db:web": "npx prisma studio",
     "db:seed": "npx prisma db seed",
     "db:migrate": "npx prisma migrate dev --name init",
+    "db:deploy": "npx prisma migrate deploy",
     "postinstall": "npx prisma generate"
   },
   "prisma": {
