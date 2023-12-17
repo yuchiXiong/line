@@ -132,6 +132,7 @@ const CreateNoteItemForm: React.FC<{
               />
 
               <Transition
+                show={query.length !== 0}
                 as={Fragment}
                 leave="transition ease-in duration-100"
                 leaveFrom="opacity-100"
